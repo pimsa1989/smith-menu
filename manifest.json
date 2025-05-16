@@ -1,15 +1,1 @@
-{
-  "name": "Smith & Friends Caf\u00e9 Menu",
-  "short_name": "Smith Menu",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#f9f6f1",
-  "theme_color": "#5e3c2d",
-  "icons": [
-    {
-      "src": "images/ICED LATTE.jpg",
-      "sizes": "192x192",
-      "type": "image/jpeg"
-    }
-  ]
-}
+{"name": "Smith Menu", "short_name": "SmithMenu", "start_url": ".", "display": "standalone"}
