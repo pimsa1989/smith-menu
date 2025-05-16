@@ -8,9 +8,9 @@
         body { font-family: sans-serif; background: #f9f6f1; padding: 2rem; max-width: 960px; margin: auto; color: #333; }
         input { width: 100%; padding: 12px; font-size: 1rem; margin-bottom: 1.5rem; border: 1px solid #ccc; border-radius: 6px; }
         .menu-card { background: #fff; padding: 1rem 1.5rem; margin-bottom: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; table-layout: auto; }
         th, td { padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-size: 0.95rem; }
-        th { background: #f0e7dd; }
+        th { background: #f0e7dd; white-space: nowrap; }
         h2 { color: #5e3c2d; margin-bottom: 0.5rem; }
     </style>
 </head>
@@ -44,24 +44,29 @@
                     const menuRows = grouped[menu];
                     if (!menu) continue;
 
-                    // Identify active columns (exclude 'Menu' col index 0)
-                    const activeCols = cols.map((col, i) => {
-                        if (i === 0) return true;
-                        return menuRows.some(row => row[i] && row[i].toString().trim() !== "");
+                    // Identify active columns for this menu group
+                    const colCount = cols.length;
+                    const activeCols = Array(colCount).fill(false);
+                    menuRows.forEach(row => {
+                        row.forEach((cell, i) => {
+                            if (i > 0 && cell && cell.toString().trim() !== "") {
+                                activeCols[i] = true;
+                            }
+                        });
                     });
 
-                    // Skip if no active columns besides Menu
+                    // Ensure at least 1 column active
                     if (activeCols.filter((v, i) => i !== 0 && v).length === 0) continue;
 
                     html += `<div class='menu-card'><h2>${menu}</h2><table><tr>`;
                     cols.forEach((col, i) => {
-                        if (i !== 0 && activeCols[i]) html += `<th>${col}</th>`;
+                        if (i > 0 && activeCols[i]) html += `<th>${col}</th>`;
                     });
                     html += `</tr>`;
                     menuRows.forEach(row => {
                         html += `<tr>`;
                         row.forEach((cell, i) => {
-                            if (i !== 0 && activeCols[i]) html += `<td>${cell}</td>`;
+                            if (i > 0 && activeCols[i]) html += `<td>${cell}</td>`;
                         });
                         html += `</tr>`;
                     });
