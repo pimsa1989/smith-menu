@@ -1,93 +1,99 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <title>สูตรเมนูกาแฟ Smith Café</title>
-    <style>
-        body { font-family: sans-serif; background: #f9f6f1; padding: 2rem; max-width: 960px; margin: auto; color: #333; }
-        input { width: 100%; padding: 12px; font-size: 1rem; margin-bottom: 1.5rem; border: 1px solid #ccc; border-radius: 6px; }
-        .menu-card { background: #fff; padding: 1rem 1.5rem; margin-bottom: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; table-layout: auto; }
-        th, td { padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-size: 0.95rem; }
-        th { background: #f0e7dd; white-space: nowrap; }
-        h2 { color: #5e3c2d; margin-bottom: 0.5rem; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>สูตรเมนูกาแฟ Smith Café</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+  <style>
+    body { font-family: sans-serif; background: #f9f6f1; padding: 1rem; max-width: 960px; margin: auto; color: #333; }
+    input { width: 100%; padding: 12px; font-size: 1rem; margin-bottom: 1.5rem; border: 1px solid #ccc; border-radius: 6px; }
+    .menu-card { background: #fff; padding: 1rem 1.5rem; margin-bottom: 2rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .menu-card img { max-width: 100%; border-radius: 8px; margin-bottom: 1rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; table-layout: auto; }
+    th, td { padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-size: 0.95rem; }
+    th { background: #f0e7dd; }
+    h2 { color: #5e3c2d; margin-bottom: 0.5rem; }
+  </style>
 </head>
 <body>
-    <h1>☕ สูตรเมนูกาแฟ Smith & Friends Café</h1>
-    <input type="text" id="searchBox" placeholder="พิมพ์ชื่อเมนู เช่น LATTE..." onkeyup="searchMenu()"/>
+  <h1>☕ สูตรเมนูกาแฟ Smith & Friends Café</h1>
+  <input type="text" id="searchBox" placeholder="Type the menu name, such as LATTE..." onkeyup="searchMenu()" />
 
-    <div id="menuContainer">Loading data...</div>
+  <div id="menuContainer">Loading data...</div>
 
-    <script>
-        const sheetID = '1GzSywURVhkYAl1vg680yLO2Efd2DSh9MxGJa4ccV4iU';
-        const sheetName = 'Sheet1';
-        const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?sheet=${sheetName}`;
+  <script>
+    const sheetID = '1GzSywURVhkYAl1vg680yLO2Efd2DSh9MxGJa4ccV4iU';
+    const sheetName = 'Sheet1';
+    const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?sheet=${sheetName}`;
 
-        fetch(url)
-            .then(res => res.text())
-            .then(rep => {
-                const jsonData = JSON.parse(rep.substring(47).slice(0, -2));
-                const cols = jsonData.table.cols.map(c => c.label);
-                const rows = jsonData.table.rows.map(r => r.c.map(c => c ? c.v : ""));
+    fetch(url)
+      .then(res => res.text())
+      .then(rep => {
+        const jsonData = JSON.parse(rep.substring(47).slice(0, -2));
+        const cols = jsonData.table.cols.map(c => c.label);
+        const rows = jsonData.table.rows.map(r => r.c.map(c => c ? c.v : ""));
 
-                const grouped = {};
-                rows.forEach(row => {
-                    const menu = row[0];
-                    if (!grouped[menu]) grouped[menu] = [];
-                    grouped[menu].push(row);
-                });
+        const grouped = {};
+        rows.forEach(row => {
+          const menu = row[0];
+          if (!grouped[menu]) grouped[menu] = [];
+          grouped[menu].push(row);
+        });
 
-                let html = "";
-                for (let menu in grouped) {
-                    const menuRows = grouped[menu];
-                    if (!menu) continue;
+        let html = "";
+        for (let menu in grouped) {
+          const menuRows = grouped[menu];
+          if (!menu) continue;
 
-                    // Identify active columns for this menu group
-                    const colCount = cols.length;
-                    const activeCols = Array(colCount).fill(false);
-                    menuRows.forEach(row => {
-                        row.forEach((cell, i) => {
-                            if (i > 0 && cell && cell.toString().trim() !== "") {
-                                activeCols[i] = true;
-                            }
-                        });
-                    });
-
-                    // Ensure at least 1 column active
-                    if (activeCols.filter((v, i) => i !== 0 && v).length === 0) continue;
-
-                    html += `<div class='menu-card'><h2>${menu}</h2><table><tr>`;
-                    cols.forEach((col, i) => {
-                        if (i > 0 && activeCols[i]) html += `<th>${col}</th>`;
-                    });
-                    html += `</tr>`;
-                    menuRows.forEach(row => {
-                        html += `<tr>`;
-                        row.forEach((cell, i) => {
-                            if (i > 0 && activeCols[i]) html += `<td>${cell}</td>`;
-                        });
-                        html += `</tr>`;
-                    });
-                    html += `</table></div>`;
-                }
-
-                document.getElementById("menuContainer").innerHTML = html || "<p>ไม่พบเมนูที่มีข้อมูลส่วนผสม</p>";
-            })
-            .catch(error => {
-                document.getElementById("menuContainer").innerHTML = "<p style='color:red;'>เกิดข้อผิดพลาดในการโหลดข้อมูล กรุณาตรวจสอบลิงก์ Google Sheet</p>";
-                console.error("Error loading Google Sheet:", error);
+          const colCount = cols.length;
+          const activeCols = Array(colCount).fill(false);
+          menuRows.forEach(row => {
+            row.forEach((cell, i) => {
+              if (i > 0 && cell && cell.toString().trim() !== "") {
+                activeCols[i] = true;
+              }
             });
+          });
 
-        function searchMenu() {
-            const input = document.getElementById("searchBox").value.toLowerCase();
-            const cards = document.getElementsByClassName("menu-card");
-            for (let card of cards) {
-                const title = card.getElementsByTagName("h2")[0].innerText.toLowerCase();
-                card.style.display = title.includes(input) ? "block" : "none";
-            }
+          if (activeCols.filter((v, i) => i !== 0 && v).length === 0) continue;
+
+          html += `<div class='menu-card'>`;
+
+          const imgFile = "images/" + menu.trim().toUpperCase() + ".jpg";
+          html += `<img src='${imgFile}' alt='${menu}' onerror="this.style.display='none'" />`;
+
+          html += `<h2>${menu}</h2><table><tr>`;
+          cols.forEach((col, i) => {
+            if (i > 0 && activeCols[i]) html += `<th>${col}</th>`;
+          });
+          html += `</tr>`;
+          menuRows.forEach(row => {
+            html += `<tr>`;
+            row.forEach((cell, i) => {
+              if (i > 0 && activeCols[i]) html += `<td>${cell}</td>`;
+            });
+            html += `</tr>`;
+          });
+          html += `</table></div>`;
         }
-    </script>
+
+        document.getElementById("menuContainer").innerHTML = html || "<p>ไม่พบเมนูที่มีข้อมูลส่วนผสม</p>";
+      });
+
+    function searchMenu() {
+      const input = document.getElementById("searchBox").value.toLowerCase();
+      const cards = document.getElementsByClassName("menu-card");
+      for (let card of cards) {
+        const title = card.getElementsByTagName("h2")[0].innerText.toLowerCase();
+        card.style.display = title.includes(input) ? "block" : "none";
+      }
+    }
+  </script>
 </body>
 </html>
