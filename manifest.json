@@ -1,0 +1,10 @@
+
+{
+  "name": "Smith Menu Web App",
+  "short_name": "SmithMenu",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#faf5ef",
+  "description": "A coffee recipe web app for Smith & Friends Café",
+  "icons": []
+}
