@@ -12,7 +12,6 @@
         th, td { padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-size: 0.95rem; }
         th { background: #f0e7dd; }
         h2 { color: #5e3c2d; margin-bottom: 0.5rem; }
-        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -36,21 +35,34 @@
                 const grouped = {};
                 rows.forEach(row => {
                     const menu = row[0];
-                    const ingredients = row.slice(2).filter(cell => cell !== "");
-                    if (menu && ingredients.length > 0) {
-                        if (!grouped[menu]) grouped[menu] = [];
-                        grouped[menu].push(row);
-                    }
+                    if (!grouped[menu]) grouped[menu] = [];
+                    grouped[menu].push(row);
                 });
 
                 let html = "";
                 for (let menu in grouped) {
+                    const menuRows = grouped[menu];
+                    if (!menu) continue;
+
+                    // Identify active columns (exclude 'Menu' col index 0)
+                    const activeCols = cols.map((col, i) => {
+                        if (i === 0) return true;
+                        return menuRows.some(row => row[i] && row[i].toString().trim() !== "");
+                    });
+
+                    // Skip if no active columns besides Menu
+                    if (activeCols.filter((v, i) => i !== 0 && v).length === 0) continue;
+
                     html += `<div class='menu-card'><h2>${menu}</h2><table><tr>`;
-                    cols.forEach(col => { if (col !== "Menu") html += `<th>${col}</th>`; });
+                    cols.forEach((col, i) => {
+                        if (i !== 0 && activeCols[i]) html += `<th>${col}</th>`;
+                    });
                     html += `</tr>`;
-                    grouped[menu].forEach(row => {
+                    menuRows.forEach(row => {
                         html += `<tr>`;
-                        row.forEach((cell, i) => { if (cols[i] !== "Menu") html += `<td>${cell}</td>`; });
+                        row.forEach((cell, i) => {
+                            if (i !== 0 && activeCols[i]) html += `<td>${cell}</td>`;
+                        });
                         html += `</tr>`;
                     });
                     html += `</table></div>`;
