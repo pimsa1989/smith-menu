@@ -2,92 +2,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Smith & Friends Café Coffee Menu Recipe</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            background: #f9f3ed;
-            padding: 2rem;
-        }
-        h1 {
-            text-align: center;
-            color: #4a2c2a;
-        }
-        .search-box {
-            width: 60%;
-            max-width: 600px;
-            margin: 0 auto 2rem;
-            display: block;
-            padding: 0.8rem;
-            font-size: 1.1rem;
-        }
-        .menu-card {
-            background: white;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
-        .menu-card img {
-            max-width: 120px;
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
-        }
-        .menu-name {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        .menu-detail {
-            margin-top: 0.3rem;
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Smith & Friends Café Coffee Menu</title>
 </head>
 <body>
-    <h1>Smith & Friends Café Coffee Menu Recipe</h1>
-    <input type="text" class="search-box" placeholder="Type to search..." onkeyup="searchMenu(this.value)">
-    <div id="menu-container"></div>
-
-    <script>
-        const menuData = [
-            {
-                name: "ICED LATTE",
-                detail: "Coffee 35ml + Milk 120ml",
-                image: "images/ICED LATTE.jpg"
-            },
-            {
-                name: "ICED AMERICANO",
-                detail: "Coffee 35ml + Water 150ml",
-                image: "images/ICED AMERICANO.jpg"
-            },
-            {
-                name: "ICED COCOA",
-                detail: "Cocoa 15g + Fresh Milk 150ml + Syrup 10ml",
-                image: "images/ICED COCOA.jpg"
-            }
-        ];
-
-        function renderMenu(data) {
-            const container = document.getElementById("menu-container");
-            container.innerHTML = "";
-            data.forEach(item => {
-                const card = document.createElement("div");
-                card.className = "menu-card";
-                card.innerHTML = `
-                    <img src="${item.image}" alt="${item.name}">
-                    <div class="menu-name">${item.name}</div>
-                    <div class="menu-detail">${item.detail}</div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function searchMenu(term) {
-            const result = menuData.filter(item => item.name.toLowerCase().includes(term.toLowerCase()));
-            renderMenu(result);
-        }
-
-        renderMenu(menuData);
-    </script>
+    <h1>WebApp Loaded</h1>
 </body>
 </html>
